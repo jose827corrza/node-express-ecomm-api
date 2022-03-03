@@ -18,6 +18,15 @@ class CategoryService {
             });
         }
     }
+    createOne(data){
+      const newCategory = {
+        id: faker.datatype.uuid(),
+        ... data
+      }
+      this.category.push(newCategory);
+      return newCategory;
+    }
+
 
     find() {
         return this.category;
@@ -27,8 +36,17 @@ class CategoryService {
         return this.category.find(item => item.id === id);
     }
 
-    updateOne(id) {
-
+    updateOne(id, changes) {
+      const index = this.category.findIndex(item => item.id === id);
+        if(index === -1) {
+            throw new Error('Product not found');
+        }
+      const updateCategory = this.category[index];
+      this.category[index] = {
+        ... updateCategory,
+        ... changes
+      }
+      return this.category[index];
     }
 
     deleteOne(id) {
@@ -36,7 +54,9 @@ class CategoryService {
         if(index === -1) {
             throw new Error('Product not found');
         }
+        const deletedCategory = this.category[index].id;
         this.category.splice(index, 1);
+        return deletedCategory;
     }
 }
 

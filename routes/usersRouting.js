@@ -5,7 +5,7 @@ const UsersService = require('../services/usersService');
 const serviceUsers = new UsersService();
 //Getting users
 router.get('/', (req, res) => {
-  
+
   const users = serviceUsers.find();
   res.json(users);
 });
@@ -20,24 +20,17 @@ router.get('/:userId', (req, res) => {
 
 //Create user
 router.post('/', (req, res) => {
-  const newUser = req.body;
-
-  res.json({
-    message: 'Created user',
-    data: newUser
-  })
+  const newUserData = req.body;
+  const newUser = serviceUsers.createOne(newUserData);
+  res.status(201).json(newUser);
 })
 
 //Update user
 router.patch('/:userId', (req, res) => {
   const {userId} = req.params;
   const body = req.body;
-
-  res.json({
-    userId: userId,
-    message: 'Updated',
-    data: body
-  });
+  const updatedUser = serviceUsers.updateOne(userId, body);
+  res.status(201).json(updatedUser);
 
 });
 
