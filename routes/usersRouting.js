@@ -1,21 +1,54 @@
 const express = require('express');
-const faker = require('faker');
 const router = express.Router();
+const UsersService = require('../services/usersService');
 
-
-
-router.get('/', (req, res) =>{
-  const products = [];
-  const { size } = req.query;
-  const limit = size || 10;
-  for(let index = 0; index < limit; index++){
-    products.push({
-      name: faker.commerce.productName(),
-      price: parseInt(faker.commerce.price(), 10),
-      image: faker.image.imageUrl(),
-    });
-  }
-  res.json(products);
+const serviceUsers = new UsersService();
+//Getting users
+router.get('/', (req, res) => {
+  
+  const users = serviceUsers.find();
+  res.json(users);
 });
+
+//Getting user
+router.get('/:userId', (req, res) => {
+  const { userId } = req.params;
+
+  const user = serviceUsers.findOne(userId);
+  res.json(user);
+});
+
+//Create user
+router.post('/', (req, res) => {
+  const newUser = req.body;
+
+  res.json({
+    message: 'Created user',
+    data: newUser
+  })
+})
+
+//Update user
+router.patch('/:userId', (req, res) => {
+  const {userId} = req.params;
+  const body = req.body;
+
+  res.json({
+    userId: userId,
+    message: 'Updated',
+    data: body
+  });
+
+});
+
+//Delete user
+router.delete('/:userId', (req, res) => {
+  const {userId} = req.params;
+  const deletedUser = serviceUsers.deleteOne(userId);
+  res.json({
+    message: 'Deleted',
+    userDeleted: deletedUser
+  })
+})
 
 module.exports = router;

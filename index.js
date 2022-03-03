@@ -3,6 +3,7 @@ const routerApi = require('./routes');
 const app = express();
 const port = 3000;
 
+app.use(express.json());//Este es un middleware muy importante, es para que pueda recibir los json
 app.get('/', (req, res) =>{
   res.send('Hola gonorrea');
 });
