@@ -11,11 +11,15 @@ router.get('/', (req, res) => {
 });
 
 //Getting user
-router.get('/:userId', (req, res) => {
-  const { userId } = req.params;
+router.get('/:userId', async(req, res, next) => {
+  try {
+    const { userId } = req.params;
 
-  const user = serviceUsers.findOne(userId);
-  res.json(user);
+    const user = await serviceUsers.findOne(userId);
+    res.json(user);
+  } catch (error) {
+    next(error);
+  }
 });
 
 //Create user
@@ -26,18 +30,18 @@ router.post('/', (req, res) => {
 })
 
 //Update user
-router.patch('/:userId', (req, res) => {
-  const {userId} = req.params;
+router.patch('/:userId', async (req, res) => {
+  const { userId } = req.params;
   const body = req.body;
-  const updatedUser = serviceUsers.updateOne(userId, body);
+  const updatedUser = await serviceUsers.updateOne(userId, body);
   res.status(201).json(updatedUser);
 
 });
 
 //Delete user
-router.delete('/:userId', (req, res) => {
-  const {userId} = req.params;
-  const deletedUser = serviceUsers.deleteOne(userId);
+router.delete('/:userId', async (req, res) => {
+  const { userId } = req.params;
+  const deletedUser = await serviceUsers.deleteOne(userId);
   res.json({
     message: 'Deleted',
     userDeleted: deletedUser

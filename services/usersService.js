@@ -1,5 +1,5 @@
 const faker = require('faker');
-
+const boom = require('@hapi/boom');
 class UsersService {
   constructor() {
     this.users = [];
@@ -14,6 +14,7 @@ class UsersService {
         name: faker.name.firstName(),
         lastname: faker.name.lastName(),
         image: faker.image.imageUrl(),
+        isBlock: faker.datatype.boolean()
       });
     }
   }
@@ -22,14 +23,21 @@ class UsersService {
     return this.users;
   }
 
-  findOne(id) {
-    return this.users.find((item) => item.id === id);
+  async findOne(id) {
+    const user = this.users.find((item) => item.id === id);
+    if(!user){
+      throw boom.badRequest('Parece ser que no existe :c');
+    }
+    if(user.isBlock) {
+      throw boom.forbidden('No puedes ver a este usuario');
+    }
+    return user;
   }
 
-  updateOne(id, changes) {
+  async updateOne(id, changes) {
     const index = this.users.findIndex((item) => item.id === id);
     if (index === -1) {
-      throw new Error('Product not found');
+      throw boom.badRequest('Product not found');
     }
     const updateUser = this.users[index];
     // se hace de esta manera por que patch envia solo lo que se cambio
@@ -41,7 +49,7 @@ class UsersService {
     return this.users[index];
   }
 
-  deleteOne(id) {
+  async deleteOne(id) {
     const index = this.users.findIndex((item) => item.id === id);
     if (index === -1) {
       throw new Error('Product not found');
@@ -49,7 +57,7 @@ class UsersService {
     this.users.splice(index, 1);
   }
 
-  createOne(data) {
+  async createOne(data) {
     const newUser = {
       id: faker.datatype.uuid(),
       ...data,
