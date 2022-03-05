@@ -1,6 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const ProductsService = require('../services/productsService');
+const ValidatorHandler = require('../middlewares/validator');
+const { createProductSchema, updateProductSchema, getProductSchema } = require('../schemas/productSchema');
 
 const serviceProducts = new ProductsService();
 
@@ -17,35 +19,38 @@ router.get('/filter', (req, res) => {
 });
 
 //Getting product
-router.get('/:id', async (req, res, next) => {
-  try {
-    const { id } = req.params;
-    const product = await serviceProducts.findOne(id);
-    res.json(product);
-  } catch (err) {
-    next(err);
-  }
-});
+router.get('/:id', ValidatorHandler(getProductSchema, 'params'),
+  async (req, res, next) => {
+    try {
+      const { id } = req.params;
+      const product = await serviceProducts.findOne(id);
+      res.json(product);
+    } catch (err) {
+      next(err);
+    }
+  });
 
 //Create product
-router.post('/', async (req, res) => {
-  const body = req.body;
-  const newProduct = await serviceProducts.createOne(body);
-  res.status(201).json(newProduct);
-})
+router.post('/', ValidatorHandler(createProductSchema, 'body'),
+  async (req, res) => {
+    const body = req.body;
+    const newProduct = await serviceProducts.createOne(body);
+    res.status(201).json(newProduct);
+  })
 
 //Update product
-router.patch('/:productId', async (req, res, next) => {
-  try {
-    const { productId } = req.params
-    const body = req.body;
-    const updatedProduct = await serviceProducts.updateOne(productId, body);
+router.patch('/:productId', ValidatorHandler(updateProductSchema, 'params'),
+  async (req, res, next) => {
+    try {
+      const { productId } = req.params
+      const body = req.body;
+      const updatedProduct = await serviceProducts.updateOne(productId, body);
 
-    res.status(201).json(updatedProduct);
-  } catch (error) {
-    next(error);
-  }
-})
+      res.status(201).json(updatedProduct);
+    } catch (error) {
+      next(error);
+    }
+  })
 
 router.delete('/:id', async (req, res) => {
   const { id } = req.params;

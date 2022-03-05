@@ -1,6 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const UsersService = require('../services/usersService');
+const ValidatorHandler = require('../middlewares/validator');
+const {createUserSchema, updateUserSchema, getUserSchema} = require('../schemas/userSchema');
 
 const serviceUsers = new UsersService();
 //Getting users
@@ -11,7 +13,8 @@ router.get('/', (req, res) => {
 });
 
 //Getting user
-router.get('/:userId', async(req, res, next) => {
+router.get('/:userId', ValidatorHandler(getUserSchema, 'params'),
+ async(req, res, next) => {
   try {
     const { userId } = req.params;
 
@@ -23,14 +26,16 @@ router.get('/:userId', async(req, res, next) => {
 });
 
 //Create user
-router.post('/', async (req, res) => {
+router.post('/', ValidatorHandler(createUserSchema, 'body'),
+ async (req, res) => {
   const newUserData = req.body;
   const newUser = await serviceUsers.createOne(newUserData);
   res.status(201).json(newUser);
 })
 
 //Update user
-router.patch('/:userId', async (req, res) => {
+router.patch('/:userId', ValidatorHandler(updateUserSchema, 'params'),
+ async (req, res) => {
   const { userId } = req.params;
   const body = req.body;
   const updatedUser = await serviceUsers.updateOne(userId, body);

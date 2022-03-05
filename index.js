@@ -1,14 +1,35 @@
 const express = require('express');
 const routerApi = require('./routes');
-const app = express();
-const port = 3000;
 const {errorHandler, boomErrorHandler} = require('./middlewares/errorHandler');
+const cors = require('cors');
+
+
+
+const app = express();
+const port = process.env.PORT || 3000;
 
 app.use(express.json());//Este es un middleware muy importante, es para que pueda recibir los json
+const whitelist = []//Esta lista seria de los dominios de donde aceptariamos las peticiones 
 
+// const options = {
+//   origin : (origin, callBack) => {
+//     if(whitelist.includes(origin) || origin){
+//       callBack(null, true);
+//     }else{
+//       callBack(new Error('No permitido'));
+//     }
+//   }
+// }
+// app.use(cors(options));
+
+//---------------
+//lo comentado arriba seria la conf para determinar los origenes
+
+
+app.use(cors());//Si se deja asi va a recibir de cualquier dominio
 
 app.get('/', (req, res) =>{
-  res.send('Hola gonorrea');
+  res.send('API mock joseDev');
 });
 
 routerApi(app);
