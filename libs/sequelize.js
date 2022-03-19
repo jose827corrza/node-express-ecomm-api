@@ -13,8 +13,10 @@ const options = {
 }
 
 if(config.isProd){
-  options.ssl = {
-    rejectUnauthorized: false
+  options.dialectOptions = {
+    ssl: {
+      rejectUnauthorized: false
+    }//Esto de SSl es solo para DBs en Postgres
   }
 }
 
