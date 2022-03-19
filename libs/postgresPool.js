@@ -1,12 +1,16 @@
 const { Pool } = require('pg');
-const {config} = require('../config/config');
+const { config } = require('../config/config');
+let URI = '';
 
-const USER = encodeURIComponent(config.dbUser);
-const PASSWORD = encodeURIComponent(config.dbPassword);
+if (config.isProd) {
+  URI = config.dbUrl;
+} else {
+  const USER = encodeURIComponent(config.dbUser);
+  const PASSWORD = encodeURIComponent(config.dbPassword);
+  URI = `postgres://${USER}:${PASSWORD}@${config.dbHost}:${config.dbPort}/${config.dbName}`;
+}
 
-const URI = `postgres://${USER}:${PASSWORD}@${config.dbHost}:${config.dbPort}/${config.dbName}`;
-
-const pool = new Pool({connectionString: URI});
+const pool = new Pool({ connectionString: URI });
 
 // {
 //   host: 'localhost',
