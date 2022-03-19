@@ -1,69 +1,85 @@
-const faker = require('faker');
+const {models} = require('../libs/sequelize')
 const boom = require('@hapi/boom');
-
+const { Op } = require('sequelize');
 class ProductsService {
 
     constructor() {
         this.products = [];
-        this.generate();
+
     }
 
-    generate() {
+    // generate() {
 
-        const limit = 100;
-        for (let index = 0; index < limit; index++) {
-            this.products.push({
-                id: faker.datatype.uuid(),
-                name: faker.commerce.productName(),
-                price: parseInt(faker.commerce.price(), 10),
-                image: faker.image.imageUrl(),
-                isBlock: faker.datatype.boolean()
-            });
-        }
-    }
-    async createOne(data){
-      const newProduct = {
-        id: faker.datatype.uuid(),
-        ... data
+    //     const limit = 100;
+    //     for (let index = 0; index < limit; index++) {
+    //         this.products.push({
+    //             id: faker.datatype.uuid(),
+    //             name: faker.commerce.productName(),
+    //             description: faker.commerce.productDescription(),
+    //             price: parseInt(faker.commerce.price(), 10),
+    //             discount: parseInt(Math.random(), 10),
+    //             image: faker.image.imageUrl(),
+    //             createdAt: Date.now()
+    //         });
+    //     }
+    // }
+
+    async makeData(){
+      for(let i = 0; i < this.products.length; i++){
+        await models.Product.create(this.products[i]);
       }
-      this.products.push(newProduct);
-      return newProduct;
+
     }
-    find(){
-        return this.products;
+
+    async createOne(data){
+      const newUser = await models.Product.create(data);
+      return newUser;
+    }
+
+    async find(query){
+      const options = {
+        include: ['category'],
+        where: {}
+        // limit: 2,
+        // offset: 0
+      }
+      // options.limit = limit;
+      // options.offset = offset;
+      const {limit, offset, price, price_min, price_max} = query;
+      if(limit && offset){
+        options.limit = parseInt(limit);
+        options.offset = parseInt(offset);
+      }
+      if(price){
+        options.where.price = price;
+      }
+      if(price_min && price_max){
+        options.where.price = {
+          [Op.gte]: price_min,
+          [Op.lte]: price_max
+        }
+      }
+        return models.Product.findAll(options);
     }
 
     async findOne(id){
-        const product = this.products.find(item => item.id === id);
+        const product = await models.Product.findByPk(id);
         if(!product){
-          throw boom.notFound('Creo no existe lo que buscas :C');
-        }
-        if(product.isBlock){
-          throw boom.conflict('No esta disponible');
+          throw boom.notFound('No existe el producto');
         }
         return product;
     }
 
     async updateOne(id, changes){
-      const index = this.products.findIndex(item => item.id === id);
-      if(index == -1){
-        throw boom.notFound('producto a actualizar no encontrado :C');
-      }
-      const product = this.products[index];
-      this.products[index] = {
-        ... product,
-        ... changes
-      }
-      return this.products[index];
+      const product = await this.findOne(id);
+      const rta = await product.update(changes);
+      return rta;
     }
 
     async deleteOne(id){
-      const index = this.products.findIndex(item => item.id === id);
-      if(index === -1){
-        throw boom.notFound('Product not found :C');
-      }
-      this.products.splice(index, 1);
-      return { id };
+      const product = await this.findOne(id);
+      product.destroy();
+      return { id};
     }
 
 

@@ -1,6 +1,6 @@
 const express = require('express');
 const routerApi = require('./routes');
-const {errorHandler, boomErrorHandler} = require('./middlewares/errorHandler');
+const {errorHandler, boomErrorHandler, ormErrorHandler} = require('./middlewares/errorHandler');
 const cors = require('cors');
 
 
@@ -9,7 +9,7 @@ const app = express();
 const port = process.env.PORT || 3000;
 
 app.use(express.json());//Este es un middleware muy importante, es para que pueda recibir los json
-const whitelist = []//Esta lista seria de los dominios de donde aceptariamos las peticiones 
+const whitelist = []//Esta lista seria de los dominios de donde aceptariamos las peticiones
 
 // const options = {
 //   origin : (origin, callBack) => {
@@ -34,8 +34,10 @@ app.get('/', (req, res) =>{
 
 routerApi(app);
 
+app.use(ormErrorHandler);
 app.use(boomErrorHandler);
 app.use(errorHandler);
+
 
 
 app.listen(port, () => {

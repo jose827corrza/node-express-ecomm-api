@@ -1,78 +1,47 @@
 const faker = require('faker');
 const boom = require('@hapi/boom');
-//const pool = require('../libs/postgresPool');
-const sequelize = require('../libs/sequelize');
+const {models} = require('../libs/sequelize');
 
 class CategoryService {
+  constructor() {
+    this.category = [];
+  }
 
-    constructor() {
-        this.category = [];
-        this.generate();
-        // this.pool = pool;
-        // this.pool.on('error', (err) => console.error(err));
+
+
+  async createOne(data) {
+    const newCategory = await models.Category.create(data);
+    return newCategory;
+  }
+
+  async find() {
+    const categories = await models.Category.findAll();
+    return categories;
+  }
+
+  async findOne(id) {
+    const category = await models.Category.findByPk(id, {
+      include: ['products']
+    });
+    if (!category) {
+      throw boom.notFound('Esta categoria no existe');
     }
+    return category;
+  }
 
-    generate() {
-        const limit = 100;
-        for (let index = 0; index < limit; index++) {
-            this.category.push({
-                id: faker.datatype.uuid(),
-                name: faker.commerce.productName(),
-                price: parseInt(faker.commerce.price(), 10),
-                image: faker.image.imageUrl(),
+  async updateOne(id, changes) {
+    const category = await this.findOne(id);
+    const rta = await category.update(changes);
+    return rta;
 
-            });
-        }
-    }
-    createOne(data){
-      const newCategory = {
-        id: faker.datatype.uuid(),
-        ... data
-      }
-      this.category.push(newCategory);
-      return newCategory;
-    }
+  }
 
+  async deleteOne(id) {
+    const category = await this.findOne(id);
+    category.destroy();
+    return { id };
 
-    async find() {
-        //return this.category;
-        const query = 'SELECT * FROM task';
-        //const rta = await this.pool.query(query);
-        //return rta.rows;
-        const [data, metadata] = await sequelize.query(query);
-        return data;
-    }
-
-    async findOne(id) {
-        const category = this.category.find(item => item.id === id);
-        if(!category){
-          throw boom.notFound('no esxiste la categoria');
-        }
-        return category;
-    }
-
-    async updateOne(id, changes) {
-      const index = this.category.findIndex(item => item.id === id);
-        if(index === -1) {
-            throw boom.notFound('Product not found');
-        }
-      const updateCategory = this.category[index];
-      this.category[index] = {
-        ... updateCategory,
-        ... changes
-      }
-      return this.category[index];
-    }
-
-    async deleteOne(id) {
-        const index = this.category.findIndex(item => item.id === id);
-        if(index === -1) {
-            throw boom.notFound('Product not found');
-        }
-        const deletedCategory = this.category[index].id;
-        this.category.splice(index, 1);
-        return deletedCategory;
-    }
+  }
 }
 
 module.exports = CategoryService;

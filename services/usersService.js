@@ -1,69 +1,38 @@
-const faker = require('faker');
 const boom = require('@hapi/boom');
+
+const {models} = require('../libs/sequelize');
+
 class UsersService {
-  constructor() {
-    this.users = [];
-    this.generate();
+  constructor() {}
+
+  async createOne(data){
+    const newUser = await models.User.create(data);
+    return newUser;
   }
 
-  generate() {
-    const limit = 100;
-    for (let index = 0; index < limit; index++) {
-      this.users.push({
-        id: faker.datatype.uuid(),
-        name: faker.name.firstName(),
-        lastname: faker.name.lastName(),
-        image: faker.image.imageUrl(),
-        isBlock: faker.datatype.boolean()
-      });
-    }
-  }
-
-  find() {
-    return this.users;
+  async find() {
+    const rta = await models.User.findAll();
+    return rta;
   }
 
   async findOne(id) {
-    const user = this.users.find((item) => item.id === id);
+    const user = await models.User.findByPk(id);
     if(!user){
-      throw boom.badRequest('Parece ser que no existe :c');
-    }
-    if(user.isBlock) {
-      throw boom.forbidden('No puedes ver a este usuario');
+      throw boom.notFound('Creo no existe el usuario');
     }
     return user;
   }
 
   async updateOne(id, changes) {
-    const index = this.users.findIndex((item) => item.id === id);
-    if (index === -1) {
-      throw boom.badRequest('Product not found');
-    }
-    const updateUser = this.users[index];
-    // se hace de esta manera por que patch envia solo lo que se cambio
-    // y lo de abajo automaticamente sabe que cambio es el que tiene que cambiar
-    this.users[index] = {
-      ...updateUser,
-      ...changes,
-    };
-    return this.users[index];
+    const user = await this.findOne(id);
+    const rta = await user.update(changes);
+    return rta;
   }
 
   async deleteOne(id) {
-    const index = this.users.findIndex((item) => item.id === id);
-    if (index === -1) {
-      throw new Error('Product not found');
-    }
-    this.users.splice(index, 1);
-  }
-
-  async createOne(data) {
-    const newUser = {
-      id: faker.datatype.uuid(),
-      ...data,
-    };
-    this.users.push(newUser);
-    return newUser;
+    const user = await this.findOne(id);
+    user.destroy();
+    return {id};
   }
 }
 
