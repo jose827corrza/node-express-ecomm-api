@@ -1,7 +1,7 @@
 'use strict';
 const {DataTypes, Sequelize} = require('sequelize');
 
-const {USER_TABLE} = require('../models/userModel');
+const {USER_TABLE, UserSchema} = require('../models/userModel');
 const {PRODUCT_TABLE, ProductSchema} = require('../models/productModel');
 const {CATEGORY_TABLE, CategorySchema} = require('../models/categoryModel');
 const {CUSTOMER_TABLE, CustomerSchema} = require('../models/customerModel');
@@ -14,30 +14,7 @@ module.exports = {
      * Example:
      * await queryInterface.createTable('users', { id: Sequelize.INTEGER });
      */
-    await queryInterface.createTable(USER_TABLE, {
-      id: {
-        allowNull: false,
-        autoIncrement: true,
-        primaryKey: true,
-        type: DataTypes.INTEGER
-      },
-      email:{
-        allowNull: false,
-        type: DataTypes.STRING,
-        unique: true,
-      },
-      password:{
-        allowNull: false,
-        type: DataTypes.STRING,
-      },
-      createdAt:{
-        allowNull: false,
-        type: DataTypes.DATE,
-        field: 'created_at',
-        defaultValue: Sequelize.NOW
-
-      }
-    });
+    await queryInterface.createTable(USER_TABLE, UserSchema);
     await queryInterface.createTable(CATEGORY_TABLE, CategorySchema);
     await queryInterface.createTable(PRODUCT_TABLE, ProductSchema);
     await queryInterface.createTable(CUSTOMER_TABLE, CustomerSchema);
