@@ -92,6 +92,7 @@ node_modules/
 jspm_packages/
 postgres_data/
 mysql_data/
+postgresDB
 
 # Snowpack dependency directory (https://snowpack.dev/)
 web_modules/

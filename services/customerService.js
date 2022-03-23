@@ -12,6 +12,7 @@ const newCustomer = await models.Customer.create({
   ...data,
   userId: newUser.id
 });
+
 return newCustomer;
   }
   async find() {

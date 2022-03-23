@@ -33,7 +33,7 @@ app.get('/', (req, res) =>{
 });
 
 routerApi(app);
-
+require('./utils/auth');
 app.use(ormErrorHandler);
 app.use(boomErrorHandler);
 app.use(errorHandler);

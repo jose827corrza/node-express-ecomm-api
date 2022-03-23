@@ -1,0 +1,517 @@
+openapi: 3.0.1
+info:
+  title: NODE_POSTGRES_DB
+  description: 'This is the technical documentation about the service developed in Node that has several layers such as data input validation, error handlers, model schemas, it was designed as a MVC architecture, the v1.0.0 has no authentication or authorization layer, nevertheless this il going to be deployed by v1.1.0, as DB it uses a Postgres db hosted by heroku as well.  This has been developed as learning purposes.'
+  termsOfService: http://swagger.io/terms/
+  contact:
+    email: jose.corrzaDeveloper@gmail.com
+  license:
+    name: MIT
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  version: 1.0.0
+externalDocs:
+  description: Find out more about Swagger
+  url: http://swagger.io
+servers:
+- url: https://tranquil-journey-69116.herokuapp.com
+tags:
+- name: Product
+  description: Everything about products in the ecommerce.
+  externalDocs:
+    description: Find out more
+    url: http://swagger.io
+- name: User
+  description: Access over the users of the ecommerce.
+- name: Category
+  description: Big groups of prodcuts.
+- name: Orders
+  description: Represents a list of products to be buy, relacionated with a user/customer.
+- name: Customer
+  description: Corresponds to the opertions over the user-s accounts.
+  externalDocs:
+    description: Find out more about our store
+    url: http://swagger.io
+paths:
+  /node/v1/category:
+    post:
+      tags:
+      - Category
+      summary: Creates a category
+      description: Creates a new category to group several products.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/categoryRequest'
+      responses:
+        '201':
+          description: Category created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/categoryResponse'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/badRequest'
+    get:
+      tags:
+      - Category
+      summary: List of categories.
+      description: Return a list of all categories.
+      responses:
+        200:
+          description: List of categories.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/getCategory'
+  /node/v1/category/{id}:
+    get:
+      tags:
+      - Category
+      summary: Get a category
+      description: Returns detail information about a specific category, in field products returns a list of products that are part of the category.
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: number
+          required: true
+      responses:
+        200:
+          description: Info of the specific category.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/getSpecificCategory'
+  /node/v1/products:
+    get:
+      tags: 
+      - Product
+      summary: Returns all the products in the DB.
+      description: This response can be filtered  by using the limit or offset query params.
+      parameters:
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            description: Set the max number of product to be displayed.
+        - in: query
+          name: offset
+          schema:
+            type: integer
+            description: Set the starting point for a pagintation process.
+      responses:
+        '200':
+          description: Everything went well.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/productResponse'
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/badRequest'
+    post:
+      tags:
+      - Product
+      requestBody:
+        content:
+          application/body:
+            schema:
+              $ref: '#/components/schemas/productRequest'
+      responses:
+        '201':
+          description: Return created product.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/productResponse'
+  /node/v1/products/{id}:
+    get:
+      tags:
+      - Product
+      summary: Gets product info
+      description: Get the info of an especific product with it's id.
+      parameters:
+        - in : path
+          name: id
+          schema:
+            type: integer
+          required: true
+      responses:
+        '200':
+          description: Return the product info.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/productResponse'
+  /node/v1/users:
+    get:
+      tags:
+      - User
+      summary: Return users.
+      description: Returns a list of all users.
+      responses:
+        '200':
+          description: A list of all users.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/userResponse'
+    post:
+      tags:
+      - User
+      summary: Creates an user.
+      description: Creates a new user to user as an customer.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/postNewUser'
+      responses:
+        '201':
+          description: New user created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/userResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/badRequest'
+  /node/v1/users/{id}:
+    get:
+      tags:
+      - User
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: number
+          required: true
+      summary: Gets an user.
+      description: Returns information about a specific user.
+      responses:
+        200:
+          description: The requested user.
+          content:  
+            application/json:
+              schema:
+                $ref: '#/components/schemas/userResponse'
+  /node/v1/customers:
+    get:
+      tags:
+      - Customer
+      summary: Get all customers.
+      description: Returns a list of all customers.
+      responses:
+        200:
+          description: List of customers.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/getCustomer'
+    post:
+      tags:
+      - Customer
+      summary: Creates a customer.
+      description: This method creates a customer and an user, these both entities will be connected in the DB.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/postNewCustomer'
+      responses:
+        201:
+          description: Customer created.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/createdCustomer'
+        400:
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/badRequest'
+  /node/v1/customers/{id}:
+    get:
+      tags:
+      - Customer
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: number
+          required: true
+      summary: Gets a customer.
+      description: Returns info about a customer.
+      responses:
+        200:
+          description: Customer info.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/createdCustomer'
+        404:
+          description: Customer not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/notFound'
+components:
+  schemas:
+    createdCustomer:
+      type: object
+      properties:
+        createdAt:
+          type: string
+          example: '2022-03-20T17:43:27.224Z'
+        id:
+          type: number
+          example: 1
+        name:
+          type: string
+          example: Daniel
+        lastName:
+          type: string
+          example: Runner
+        phone:
+          type: string
+          example: 9005551010
+        userId:
+          type: number
+          example: 4
+    postNewCustomer:
+      type: object
+      properties:
+        name:
+          type: string
+          example: Daniel
+        lastName:
+          type: string
+          example: Runner
+        phone:
+          type: string
+          example: 9005551010
+        user:
+          type: object
+          properties:
+            email:
+              type: string
+              example: daniel@mail.com
+            password:
+              type: string
+              example: weakPsswd
+    getCustomer:
+      type: object
+      properties:
+        id:
+          type: number
+          example: 1
+        name:
+          type: string
+          example: jose
+        lastName:
+          type: string
+          example: Corredor
+        phone:
+          type: string
+          example: 3035559090
+        createdAt: 
+          type: string
+          example: '2022-03-20T17:43:27.224Z'
+        userId:
+          type: number
+          example: 4
+        user:
+          $ref: '#/components/schemas/userResponse'
+    getSpecificCategory:
+      type: object
+      properties:  
+        id:
+          type: number
+          example: 1
+        name:
+          type: string
+          example: Decoracion
+        image:
+          type: string
+          example: http://placeimg.com/640/480
+        createdAt:
+          type: string
+          example: '2022-03-20T17:05:28.482Z'
+        products:
+          type: array
+          items:
+            $ref: '#/components/schemas/productResponse'
+    getCategory:
+      type: object
+      properties:
+        id:
+          type: number
+          example: 1
+        name:
+          type: string
+          example: Decoracion
+        image:
+          type: string
+          example: http://placeimg.com/640/480
+        createdAt:
+          type: string
+          example: '2022-03-20T17:05:28.482Z'
+    userResponse:
+      type: object
+      properties:
+        id:
+          type: number
+          example: 1
+        email:
+          type: string
+          example: admin@mail.com
+        password:
+          type: string
+          example: strongPassword123
+        role:
+          type: string
+          example: Administrator
+        createdAt:
+          type: string
+          example: '2022-03-20T15:18:51.393Z'
+    postNewUser:
+      type: object
+      properties:
+        email:
+          type: string
+          example: admin@mail.com
+        password:
+          type: string
+          example: strongPassword123
+        role:
+          type: string
+          example: Administrator
+    productResponse:
+      type: object
+      properties:
+        id:
+          type: number
+          example: 2
+        name:
+          type: string
+          example: Cuadro Dvinci
+        description:
+          type: string
+          example: Cualquiera es muy lindo
+        price:
+          type: number
+          example: 3500
+        discount:
+          type: number
+          example: null
+        image:
+          type: string
+          example: http://placeimg.com/640/480
+        createdAt:
+          type: string
+          example: '2022-03-20T14:55:37.379Z'
+        categoryId:
+          type: number
+          example: 1
+    categoryResponse:
+      type: object
+      properties:
+        createdAt:
+          type: string
+          example: '2022-03-20T14:55:24.623Z'
+        id:
+          type: number
+          example: 1
+        name:
+          type: string
+          example: Decoration
+        image:
+          type: string
+          example: http://placeimg.com/640/480
+    categoryRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          example: Decoration
+        image:
+          type: string
+          example: http://img.com/540/640
+    productRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          example: Bike
+        price:
+          type: number
+          example: 400000
+        description:
+          type: string
+          example: An incredible bike.
+        image:
+          type: string
+          example: http://img.com/540/640
+    badRequest:
+      type: object
+      properties:
+        statusCode:
+          type: number
+          description: Returns the code of the HTTP request.
+          example: 400
+        error:
+          type: string
+          description: Returns the message of the error code.
+          example: Bad Request
+        message:
+          type: string
+          description: Returns an explanation about the error.
+          example: id field is required.
+    notFound:
+      type: object
+      properties:
+        statusCode:
+          type: number
+          description: Returns the code of the HTTP request.
+          example: 404
+        error:
+          type: string
+          description: Returns the message of the error code.
+          example: Not found.
+        message:
+          type: string
+          description: Returns an explanation about the error.
+          example: id field is required.
+  securitySchemes:
+    petstore_auth:
+      type: oauth2
+      flows:
+        implicit:
+          authorizationUrl: http://petstore.swagger.io/oauth/dialog
+          scopes:
+            write:pets: modify pets in your account
+            read:pets: read your pets
+    api_key:
+      type: apiKey
+      name: api_key
+      in: header

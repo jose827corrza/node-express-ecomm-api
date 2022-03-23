@@ -7,12 +7,21 @@ class UsersService {
 
   async createOne(data){
     const newUser = await models.User.create(data);
+    //Deletes the field password before returning to prevent of showing the password
+    delete newUser.dataValues.password;
     return newUser;
   }
 
   async find() {
     const rta = await models.User.findAll();
     return rta;
+  }
+
+  async findByEmail(email) {
+    const user = await models.User.findOne({
+      where: {email}
+    });
+    return user;
   }
 
   async findOne(id) {

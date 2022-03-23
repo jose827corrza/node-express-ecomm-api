@@ -3,6 +3,7 @@ const categoryRouter = require('./categoryRouting');
 const usersRouter = require('./usersRouting');
 const customersRouter = require('./customerRouting');
 const ordersRouter = require('./orderRouting');
+const authRouter = require('./authRouting');
 const express = require('express');
 
 
@@ -15,6 +16,7 @@ function routerApi(app){
   router.use('/users', usersRouter);
   router.use('/customers', customersRouter);
   router.use('/orders', ordersRouter);
+  router.use('/auth', authRouter);
   //Y asi se haria el proceso si fuera versionamiento de endpoints
   //app.use('/joseDev/v2', router)
 }
