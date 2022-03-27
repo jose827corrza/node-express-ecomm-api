@@ -16,9 +16,17 @@ const newCustomer = await models.Customer.create({
 return newCustomer;
   }
   async find() {
-    const rta = await models.Customer.findAll({
-      include: ['user']
-    });
+    const options = {
+      attributes: {
+        exclude: ['password', 'recoveryToken'],
+        
+      },
+      include: ['user'],
+    };
+    const rta = await models.Customer.findAll(
+      
+      options
+    );
     return rta;
   }
   async findOne(id) {

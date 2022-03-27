@@ -2,6 +2,8 @@ const express = require('express');
 const router = express.Router();
 const ProductsService = require('../services/productsService');
 const ValidatorHandler = require('../middlewares/validator');
+const checkForRoles = require('../middlewares/authHandler');
+const passport = require('passport');
 const {
   createProductSchema,
   updateProductSchema,
@@ -48,6 +50,8 @@ router.get(
 //Create product
 router.post(
   '/',
+  passport.authenticate('jwt', { session: false }),
+  checkForRoles('Administrator'),
   ValidatorHandler(createProductSchema, 'body'),
   async (req, res, next) => {
     try {
@@ -69,6 +73,8 @@ router.post('/create_db', async (req, res) => {
 //Update product
 router.patch(
   '/:productId',
+  passport.authenticate('jwt', { session: false }),
+  checkForRoles('Administrator'),
   ValidatorHandler(updateProductSchema, 'params'),
   async (req, res, next) => {
     try {
@@ -83,10 +89,13 @@ router.patch(
   }
 );
 
-router.delete('/:id', async (req, res) => {
-  const { id } = req.params;
-  const deletedProduct = serviceProducts.deleteOne(id);
-  res.json(deletedProduct);
-});
+router.delete('/:id',
+  passport.authenticate('jwt', { session: false }),
+  checkForRoles('Administrator'),
+  async (req, res) => {
+    const { id } = req.params;
+    const deletedProduct = serviceProducts.deleteOne(id);
+    res.json(deletedProduct);
+  });
 
 module.exports = router;

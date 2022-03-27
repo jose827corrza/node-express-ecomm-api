@@ -275,8 +275,52 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/notFound'
+  /node/v1/orders/{id}:
+    get:
+      tags:
+        - Orders
+      parameters:
+          - in: path
+            name: id
+            schema:
+              type: number
+            required: true
+      summary: Get an order.
+      description: Returns information about an specific order.
+      responses: 
+        200:
+          description: An object with order info.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/orderRespose'
+
+
 components:
   schemas:
+    orderRespose:
+      type: object
+      properties:
+        total:
+          type: number
+          description: Total for products.
+          example: 100
+        id: 
+          type: number
+          example: 1
+        customerId:
+          type: number
+          example: 2
+        createdAt:
+          type: string
+          example: '2022-03-26T16:56:52.550Z'
+        customer:
+            $ref: '#/components/schemas/getCustomer'
+        items:
+          type: array
+          items:
+            type: object
+
     createdCustomer:
       type: object
       properties:
@@ -503,15 +547,7 @@ components:
           description: Returns an explanation about the error.
           example: id field is required.
   securitySchemes:
-    petstore_auth:
-      type: oauth2
-      flows:
-        implicit:
-          authorizationUrl: http://petstore.swagger.io/oauth/dialog
-          scopes:
-            write:pets: modify pets in your account
-            read:pets: read your pets
-    api_key:
-      type: apiKey
-      name: api_key
-      in: header
+    Authorization: 
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

@@ -13,19 +13,40 @@ class UsersService {
   }
 
   async find() {
-    const rta = await models.User.findAll();
+    const options = {
+      attributes: {
+        exclude: ['password', 'recoveryToken']
+      }
+    };
+    const rta = await models.User.findAll(options);
     return rta;
   }
 
   async findByEmail(email) {
-    const user = await models.User.findOne({
+    const options = {
+      attributes: {
+        exclude: ['password', 'recoveryToken']
+      },
       where: {email}
-    });
+    };
+    const user = await models.User.findOne(
+       {
+       where: {email}
+     },
+     options
+    
+
+    );
     return user;
   }
 
   async findOne(id) {
-    const user = await models.User.findByPk(id);
+    const options = {
+      attributes: {
+        exclude: ['password', 'recoveryToken']
+      }
+    };
+    const user = await models.User.findByPk(id, options);
     if(!user){
       throw boom.notFound('Creo no existe el usuario');
     }

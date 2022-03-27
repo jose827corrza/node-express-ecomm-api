@@ -1,6 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const CustomerService = require('../services/customerService');
+const passport = require('passport');
+const checkForRoles = require('../middlewares/authHandler');
 const ValidatorHandler = require('../middlewares/validator');
 const {
   createCustomerSchema,
@@ -64,7 +66,10 @@ router.patch(
 );
 
 //Delete customer
-router.delete('/:customerId', async (req, res, next) => {
+router.delete('/:customerId', 
+passport.authenticate('jwt', { session: false }),
+checkForRoles('Administrator'),
+async (req, res, next) => {
   try {
     const { customerId } = req.params;
     const deletedCustomer = await serviceCustomer.deleteOne(customerId);

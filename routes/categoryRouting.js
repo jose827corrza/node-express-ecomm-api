@@ -21,8 +21,6 @@ router.get('/', async (req, res) => {
 //Getting category
 router.get(
   '/:id',
-  passport.authenticate('jwt', {session: false}),
-  checkForRoles('admin', 'Administrator'),
   ValidatorHandler(getCategorySchema, 'params'),
   async (req, res, next) => {
     try {
@@ -38,7 +36,8 @@ router.get(
 //Creating category
 router.post(
   '/',
-  passport.authenticate('jwt', {session: false}),
+  passport.authenticate('jwt', { session: false }),
+  checkForRoles('Administrator'),
   ValidatorHandler(createCategorySchema, 'body'),
   async (req, res) => {
     const body = req.body;
@@ -50,6 +49,8 @@ router.post(
 //Updating category
 router.patch(
   '/:id',
+  passport.authenticate('jwt', { session: false }),
+  checkForRoles('Administrator'),
   ValidatorHandler(getCategorySchema, 'params'),
   ValidatorHandler(updateCategorySchema, 'body'),
   async (req, res, next) => {
@@ -65,10 +66,13 @@ router.patch(
 );
 
 //Deleting category
-router.delete('/:id', async (req, res) => {
-  const { id } = req.params;
-  const category = await serviceCategory.deleteOne(id);
-  res.status(201).json(category);
-});
+router.delete('/:id',
+  passport.authenticate('jwt', { session: false }),
+  checkForRoles('Administrator'),
+  async (req, res) => {
+    const { id } = req.params;
+    const category = await serviceCategory.deleteOne(id);
+    res.status(201).json(category);
+  });
 
 module.exports = router;
