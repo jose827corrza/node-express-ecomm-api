@@ -8,21 +8,7 @@ class ProductsService {
 
     }
 
-    // generate() {
 
-    //     const limit = 100;
-    //     for (let index = 0; index < limit; index++) {
-    //         this.products.push({
-    //             id: faker.datatype.uuid(),
-    //             name: faker.commerce.productName(),
-    //             description: faker.commerce.productDescription(),
-    //             price: parseInt(faker.commerce.price(), 10),
-    //             discount: parseInt(Math.random(), 10),
-    //             image: faker.image.imageUrl(),
-    //             createdAt: Date.now()
-    //         });
-    //     }
-    // }
 
     async makeData(){
       for(let i = 0; i < this.products.length; i++){
