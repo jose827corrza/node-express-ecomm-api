@@ -17,6 +17,7 @@ function routerApi(app){
   router.use('/customers', customersRouter);
   router.use('/orders', ordersRouter);
   router.use('/auth', authRouter);
+
   //Y asi se haria el proceso si fuera versionamiento de endpoints
   //app.use('/joseDev/v2', router)
 }

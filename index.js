@@ -2,12 +2,15 @@ const express = require('express');
 const routerApi = require('./routes');
 const {errorHandler, boomErrorHandler, ormErrorHandler} = require('./middlewares/errorHandler');
 const cors = require('cors');
-
+const YAML = require('yamljs');
+const swaggerUI = require('swagger-ui-express');
+const swaggerDocument = YAML.load('./nodeDoc.yaml');
 
 
 const app = express();
 const port = process.env.PORT || 3000;
 
+app.use('/doc', swaggerUI.serve, swaggerUI.setup(swaggerDocument));
 app.use(express.json());//Este es un middleware muy importante, es para que pueda recibir los json
 const whitelist = []//Esta lista seria de los dominios de donde aceptariamos las peticiones
 
